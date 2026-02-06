@@ -3,6 +3,8 @@ package com.aman.journalApp.controller;
 import com.aman.journalApp.entity.User;
 import com.aman.journalApp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,8 +26,14 @@ public class UserController {
         userService.saveEntry(user);
     }
 
-    @PutMapping
-    public void updateUser(@RequestBody User user){
-        userService.saveEntry();
+    @PutMapping("/id/{username}")
+    public ResponseEntity<?> updateUser(@RequestBody User user , @PathVariable String username){
+        User userInDb = userService.findByUsername(username);
+        if (userInDb!= null){
+            userInDb.setUsername(user.getUsername());
+            userInDb.setPassword(user.getPassword());
+            userService.saveEntry(userInDb);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
